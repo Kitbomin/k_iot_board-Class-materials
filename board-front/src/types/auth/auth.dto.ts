@@ -18,9 +18,15 @@ export interface LoginResponse {
 export interface SignupRequest {
   username: string;
   password: string;
+  confirmPassword: string;
   nickname: string;
-  email: string;
-  // gender ... 추가 가능
+  email: string; 
+  // gender 등 추가 가능
 }
 
 
+export interface PasswordResetRequestDto {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}

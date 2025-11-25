@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -81,6 +82,13 @@ public class WebSecurityConfig {
         return source;
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web -> web.ignoring().requestMatchers(
+                 "/error", "/favicon.ico"
+        ));
+    }
+
     /* ============================ */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, oAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) throws Exception {
@@ -109,7 +117,12 @@ public class WebSecurityConfig {
             auth
                     // .permitAll(): 인증/인가 없이 모두 가능함
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/api/v1/auth/**").permitAll()     // 로그인, 회원가입 등 - 인증 서비스
+
+                    /**
+                     * 인증 불필요
+                     * : permitAll
+                     */
+                    .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/oauth2/code/**", "/error").permitAll()     // 로그인, 회원가입 등 - 인증 서비스
                     .requestMatchers(HttpMethod.GET, "api/v1/boards/**").permitAll() // 게시판 조회 기능
 
                     // 인증된 사용자만 사용 가능(인가, 권한 개념이 아님 -> 인증임)
@@ -121,7 +134,9 @@ public class WebSecurityConfig {
                     // : HttpMethod는 선택값임         | 여기서부터는 필수임
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/~~").hasAnyRole("A권한", "B권한") => A 또는 B 권한만 사용 가능
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/~~").hasRole("단일 권한만") => 해당 권한만 사용 가능
-
+                    /**
+                     * 인증 필요
+                     */
                     .anyRequest().authenticated(); // 그 외에는 인증 필요
         })
                 // OAuth2 로그인 설정
