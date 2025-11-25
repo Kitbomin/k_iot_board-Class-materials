@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.boardback.security.filter.JwtAuthenticationFilter;
 import org.example.boardback.security.handler.JsonAccessDeniedHandler;
 import org.example.boardback.security.handler.JsonAuthenticationEntryPoint;
+import org.example.boardback.security.oauth2.handler.oAuth2AuthenticationSuccessHandler;
+import org.example.boardback.security.oauth2.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,7 +70,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(true);           // 쿠키 전송 허용
         config.setAllowedOriginPatterns(splitToList(allowedOrigins));
         config.setAllowedHeaders(splitToList(allowedHeaders));
         config.setAllowedMethods(splitToList(allowedMethods));
@@ -81,7 +83,7 @@ public class WebSecurityConfig {
 
     /* ============================ */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService, oAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -121,7 +123,15 @@ public class WebSecurityConfig {
 //                    .requestMatchers(HttpMethod.GET, "/api/v1/~~").hasRole("단일 권한만") => 해당 권한만 사용 가능
 
                     .anyRequest().authenticated(); // 그 외에는 인증 필요
-        });
+        })
+                // OAuth2 로그인 설정
+                .oauth2Login(oauth2 -> oauth2
+                        // OAuth2 로그인 시 사용자 정보를 가져올 때 사용할 서비스 지정
+                        .userInfoEndpoint(userinfo ->
+                                userinfo.userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                );
 
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
