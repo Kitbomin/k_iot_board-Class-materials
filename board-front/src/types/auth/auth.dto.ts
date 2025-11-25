@@ -11,10 +11,7 @@ export interface LoginRequest {
 // 로그인 응답
 export interface LoginResponse {
   accessToken: string;
-  refreshToken: string;
   accessTokenExpiresInMillis: number;
-  userId: number;
-  nickname: string;
 }
 
 // 회원가입 요청
@@ -22,9 +19,8 @@ export interface SignupRequest {
   username: string;
   password: string;
   nickname: string;
+  email: string;
+  // gender ... 추가 가능
 }
 
-// Refresh 요청
-export interface RefreshRequest {
-  refreshToken: string;
-}
+
