@@ -1,19 +1,15 @@
-
-import { Link, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import { useAuthStore } from "./stores/auth.store";
-import RegisterPage from "./pages/RegisterPage";
-import OAuth2CallbackPage from "./pages/OAuth2CallbackPage";
 import { useEffect } from "react";
+import { useAuthStore } from "./stores/auth.store";
 import { userApi } from "./apis/user/user.api";
 import { GlobalStyle } from "./styles/global";
 import Layout from "./components/layout/Layout";
+import AuthRouter from "./pages/auth/AuthRouter";
+import MainRouter from "./pages/MainRouter";
 
 export default function App() {
   const { isInitialized, accessToken, user, setUser } = useAuthStore();
 
   useEffect(() => {
-    console.log(isInitialized);
     if (!isInitialized) return;
     if (!accessToken) return;
     if (user) return;
@@ -26,11 +22,10 @@ export default function App() {
         }
       }
     })();
-
   }, [isInitialized, accessToken]);
 
   if (!isInitialized) {
-    return <div>로딩중</div>
+    return <div>로딩중</div>;
   }
 
   const isLoggedIn = Boolean(accessToken && user);
@@ -38,9 +33,13 @@ export default function App() {
   return (
     <>
       <GlobalStyle />
-      <Layout>
-        <div> Main - DashBoard </div>
-      </Layout>
+      {isLoggedIn ? (
+        <Layout>
+          <MainRouter />
+        </Layout>
+      ) : (
+        <AuthRouter />
+      )}
     </>
   );
 }

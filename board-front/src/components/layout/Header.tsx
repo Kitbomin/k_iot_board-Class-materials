@@ -10,7 +10,12 @@ interface HeaderProps {
 function Header({onToggleSidebar}: HeaderProps) {
   return (
     <header css={headerStyle}>
-      <div className="sidebar-btn" onClick={onToggleSidebar}>🍔</div>
+      <div className="sidebar-btn" onClick={onToggleSidebar}>
+        <div className="hamburger hamburger1"></div>
+        <div className="hamburger hamburger2"></div>
+        <div className="hamburger hamburger3"></div>
+      </div>
+      
       <h1>Board</h1>
       <div className="right">Login</div>
     </header>
@@ -27,16 +32,27 @@ const headerStyle = css`
   background: white;
   border-bottom: 1px solid #e5e7eb;
 
-  .sidebar-btn, .right {
-    cursor: pointer;
+  .hamburger {
+    width: 25px;
+    border: 1.9px solid black;
+    transition: width 0.2s ease;
   }
 
   .sidebar-btn {
-    font-size: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .sidebar-btn,
+  .right {
+    cursor: pointer;
+  }
+
+  .sidebar-btn:hover > .hamburger2 {
+    width: 15px;
   }
 
   h1 {
-    flex: 2;
     text-align: center;
     color: var(--primary);
   }
