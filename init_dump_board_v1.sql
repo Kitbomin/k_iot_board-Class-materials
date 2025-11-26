@@ -61,7 +61,7 @@ CREATE TABLE users (
     updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
     CONSTRAINT `uk_users_username` UNIQUE(username),
-    CONSTRAINT `uk_users_email` UNIQUE(email),
+    -- CONSTRAINT `uk_users_email` UNIQUE(email),
     CONSTRAINT `uk_users_nickname` UNIQUE(nickname),
     CONSTRAINT `uk_users_provider_provider_id` UNIQUE(provider, provider_id),
 

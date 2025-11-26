@@ -24,7 +24,7 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
 
     @Override
     public String getName() {
-        return (String) getResponse().get("name");
+        return (String) getResponse().get("nickname");
     }
 
     @Override
