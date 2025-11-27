@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .roles(user.getUserRoles().stream()
-                        .map(role -> role.getRole().getName().name()).collect(Collectors.toSet()))
+                        .map(role -> role.getRole().getName()).collect(Collectors.toSet()))
                 .provider(user.getProviderId())
                 .build();
 

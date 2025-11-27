@@ -2,6 +2,7 @@ package org.example.boardback.dto.user.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.boardback.common.enums.user.RoleType;
 
 import java.util.Set;
 
@@ -13,6 +14,6 @@ public class MeResponseDto {
     private String email;
     private String nickname;
     private String profileImageUrl;
-    private Set<String> roles;
+    private Set<RoleType> roles;
     private String provider;
 }

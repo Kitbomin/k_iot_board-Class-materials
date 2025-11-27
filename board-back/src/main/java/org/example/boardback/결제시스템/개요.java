@@ -1,0 +1,37 @@
+package org.example.boardback.결제시스템;
+
+/**
+ * === 결제 시스템 구현 ===
+ * 스프링부트 + JPA + 외부 PG(Payment Gateway) 연동
+ *
+ * cf) PG: 온라인 쇼핑몰에서 다양한 결제수단 (카드결제, 계좌 이체 등)을 사용할 수 있도록 결제를 대신 처리해주는 결제 대행사
+ *
+ * -- 결제 시스템 흐름
+ *    사용자(클라이언트 = 프론트) -> 서버 -> PG(토스/카카오...) -> 서버 -> DB 구조
+ *
+ *      1) 사용자가 결제 버튼을 클릭
+ *          -> 서버로 요청을 보냄 (PaymentController.createPayment(); 실행)
+ *
+ *      2) 컨트롤러 -> 서비스 호출
+ *          : 결제 가능한 사용자인지 확인(로그인 된 사용자), 결제 수단에 맞는 게이트웨이 선택
+ *            MOCK / KAKAO_PAY / TOSS_PAY
+ *
+ *      3) 선택된 PaymentGateway 에서 PG 결제 요청
+ *          : 각 Gateway의 pay() 메서드 내부에서
+ *          - 토스 / 카카오 REST API 호출 (RestTemplate 사용)
+ *              > 응답 성공 / 실패에 따라 PaymentResult 생성
+ *
+ *      4) 서비스에서 Payment 엔티티 생성 (PaymentResult를 기반으로)
+ *
+ *      5) 응답 DTO 생성 후 클라이언트 반환
+ *
+ *      6) 결제 내역 조회
+ *
+ *      7) 환불 요청
+ *          : 본인 소유 결제인지, 상태가 Success 인지, 금액이 유효한지 등을 확인 후 완료처리함
+ *
+ */
+
+
+public class 개요 {
+}

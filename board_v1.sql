@@ -56,12 +56,14 @@ CREATE TABLE users (
     provider_id varchar(100),
     email_verified boolean not null,
     
+    point_balance BIGINT NOT NULL DEFAULT 0 COMMENT '사용자 포인트 잔액',
+    
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     
     CONSTRAINT `uk_users_username` UNIQUE(username),
     -- CONSTRAINT `uk_users_email` UNIQUE(email),
-    CONSTRAINT `uk_users_nickname` UNIQUE(nickname),
+    -- CONSTRAINT `uk_users_nickname` UNIQUE(nickname),
     CONSTRAINT `uk_users_provider_provider_id` UNIQUE(provider, provider_id),
     CONSTRAINT `chk_users_gender` CHECK(gender IN ('MALE', 'FEMALE', 'OTHER', 'NONE')),
     CONSTRAINT `chk_users_provider` CHECK(provider IN ('LOCAL', 'GOOGLE', 'KAKAO', 'NAVER')),
@@ -71,6 +73,63 @@ CREATE TABLE users (
     DEFAULT CHARSET = utf8mb4
     COLLATE = utf8mb4_unicode_ci
     COMMENT = '사용자 기본 정보 테이블';
+
+create table payments (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL COMMENT '결제한 사용자 ID',
+    
+    order_id VARCHAR(100) NOT NULL COMMENT '주문 ID(내부 주문 번호)',
+    payment_key varchar(100) not null comment '결제 키 (PG 또는 모의 PG 트랜잭션 키)',
+    
+    amount bigint not null comment '결제 금액(포인트)',
+    method varchar(30) not null comment '결제 수단 (MOCK, KAKAO_PAY, TOSS_PAY)',
+    status varchar(30) not null comment '결제 상태',
+    
+    product_code varchar(50) not null comment '상품 코드',
+    product_name varchar(100) not null comment '상품 이름',
+    
+    failure_code varchar(50) null comment '결제 실패 코드',
+    failure_message varchar(255) null comment '결제 실패 사유',
+    
+    requested_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '결제 요청 시간',
+    approved_at DATETIME(6) NULL comment'결제 승인 시간',
+    cancelled_at DATETIME(6) NULL comment'결제 취소/환불 시간',
+    
+    constraint `uk_payments_payment_key` unique (payment_key),
+    index `idx_payments_user_id` (user_id),
+    index `idx_payments_order_id` (order_id),
+    
+    constraint `fk_payments_user` foreign key (user_id) references users(id)
+    
+)	ENGINE=InnoDB
+    DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = '결제 내역 테이블';
+    
+create table payment_fefunds (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT NOT NULL COMMENT '원 결제 ID',
+    
+    amount bigint not null comment '환불 금액',
+    reason varchar(255) null comment '환불 사유',
+    
+    status varchar(30) not null comment '환불 상태 (REQUESTED, COMPLETED, FAILED)',
+    
+    failure_code varchar(50) null comment '환불 실패 코드',
+    failure_message varchar(255) null comment '환불 실패 사유',
+    
+    requested_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '환불 요청 시간',
+    completed_at DATETIME(6) NOT NULL, 
+    
+    index `idx_payments_refunds_payment_id` (payment_id),
+    
+    constraint `fk_payment_refunds_payment` foreign key (payment_id) references payments(id)
+    
+)	ENGINE=InnoDB
+    DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = '결제 내역 테이블';
+
 
 # === ROLES (권한) === #
 CREATE TABLE roles (
